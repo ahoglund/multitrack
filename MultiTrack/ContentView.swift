@@ -20,6 +20,11 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ScrollView {
+                VStack(alignment: .trailing,spacing: 10) {
+                    Button("Add Stopwatch") {
+                        viewModel.addStopwatch()
+                    }.buttonStyle(.bordered)
+                }
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(viewModel.stopwatches.indices, id: \.self) { index in
                         StopwatchCard(
@@ -42,16 +47,15 @@ struct ContentView: View {
                 }
                 .padding()
             }
-            .navigationTitle("MultiTrack")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add Stopwatch") {
-                        viewModel.addStopwatch()
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Save Workout") {
+                        viewModel.saveWorkout(context: context)
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Save Session") {
-                        viewModel.saveSession(context: context)
+                    Button("View Workouts") {
+                        viewModel.saveWorkout(context: context)
                     }
                 }
             }

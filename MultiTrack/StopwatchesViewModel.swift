@@ -90,20 +90,23 @@ class StopwatchesViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Saving to Core Data (Placeholder)
-    func saveSession(context: NSManagedObjectContext) {
-         let activity = Activity(context: context)
-         let totalTime = stopwatches.reduce(0) { $0 + $1.elapsedTime }
-         
-         activity.totalTime = totalTime
-         activity.date = Date()
-         activity.notes = "Some workout notes"
-         
-         do {
-             try context.save()
-             print("Session saved! \(activity.notes)")
-         } catch {
-             print("Error saving session: \(error)")
-         }
+    func saveWorkout(context: NSManagedObjectContext) {
+        let workout = Workout(context: context)
+        workout.id = UUID()
+        workout.date = Date()
+        workout.name = "Workout"
+        
+        do {
+            let encoder = JSONEncoder()
+            // You can encode the entire array of Stopwatches
+            let data = try encoder.encode(stopwatches)
+            workout.stopwatchesData = String(data: data, encoding: .utf8)
+            
+            // 3) Save to persistent store
+            try context.save()
+            print("Workout saved.")
+        } catch {
+            print("Failed to encode or save workout:", error)
+        }
     }
 }

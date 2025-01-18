@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Stopwatch {
+struct Stopwatch : Codable {
     var name: String = "timer"
     var elapsedTime: TimeInterval = 0
     var laps: [TimeInterval] = []
