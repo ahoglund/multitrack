@@ -1,0 +1,109 @@
+//
+//  StopwatchesViewModel.swift
+//  MultiTrack
+//
+//  Created by Drew on 1/17/25.
+//
+
+import SwiftUI
+import Combine
+import CoreData
+
+class StopwatchesViewModel: ObservableObject {
+    @Published var stopwatches: [Stopwatch] = []
+    
+    private var timerCancellable: AnyCancellable?
+    private var lastUpdateTime: Date?
+    
+    init() {
+        // Optionally initialize with one or more stopwatches
+        stopwatches = [Stopwatch(), Stopwatch()]
+    }
+    
+    // MARK: - Timer Management
+    
+    func startStopwatch(at index: Int) {
+        guard index < stopwatches.count else { return }
+        // If it’s already running, do nothing
+        if stopwatches[index].isRunning { return }
+        
+        // Mark it running
+        stopwatches[index].isRunning = true
+        
+        // If no global timer is active, start one
+        if timerCancellable == nil {
+            lastUpdateTime = Date()
+            // Update 10 times/sec
+            timerCancellable = Timer.publish(every: 0.1, on: .main, in: .common)
+                .autoconnect()
+                .sink { [weak self] _ in
+                    self?.updateStopwatches()
+                }
+        }
+    }
+    
+    func pauseStopwatch(at index: Int) {
+        guard index < stopwatches.count else { return }
+        stopwatches[index].isRunning = false
+        
+        // If no other stopwatch is running, cancel the timer
+        if stopwatches.allSatisfy({ !$0.isRunning }) {
+            timerCancellable?.cancel()
+            timerCancellable = nil
+        }
+    }
+    
+    func resetStopwatch(at index: Int) {
+        guard index < stopwatches.count else { return }
+        guard stopwatches[index].isRunning else { return }
+        stopwatches[index].elapsedTime = 0
+        stopwatches[index].laps.removeAll()
+        stopwatches[index].isRunning = false
+        
+        // If no other stopwatch is running, cancel the timer
+        if stopwatches.allSatisfy({ !$0.isRunning }) {
+            timerCancellable?.cancel()
+            timerCancellable = nil
+        }
+    }
+    
+    func lapStopwatch(at index: Int) {
+        guard index < stopwatches.count else { return }
+        guard stopwatches[index].isRunning else { return }
+        stopwatches[index].laps.append(stopwatches[index].elapsedTime)
+    }
+    
+    // Add a new stopwatch
+    func addStopwatch() {
+        stopwatches.append(Stopwatch())
+    }
+    
+    // Update time for all running stopwatches
+    private func updateStopwatches() {
+        guard let lastTime = lastUpdateTime else { return }
+        let now = Date()
+        let delta = now.timeIntervalSince(lastTime)
+        lastUpdateTime = now
+        
+        for i in stopwatches.indices where stopwatches[i].isRunning {
+            stopwatches[i].elapsedTime += delta
+        }
+    }
+    
+    // MARK: - Saving to Core Data (Placeholder)
+    func saveSession(context: NSManagedObjectContext) {
+         let activity = Activity(context: context)
+         let totalTime = stopwatches.reduce(0) { $0 + $1.elapsedTime }
+         
+         activity.totalTime = totalTime
+         activity.date = Date()
+         activity.notes = "Some workout notes"
+         
+         do {
+             try context.save()
+             print("Session saved! \(activity.notes)")
+         } catch {
+             print("Error saving session: \(error)")
+         }
+    }
+}
