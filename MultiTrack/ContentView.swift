@@ -54,11 +54,15 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("View Workouts") {
-                        viewModel.saveWorkout(context: context)
-                    }
-                }
+                      NavigationLink("View Workouts") {
+                          WorkoutsView()
+                      }
+                  }
             }
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
