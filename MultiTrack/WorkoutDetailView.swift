@@ -8,11 +8,9 @@ import SwiftUI
 import CoreData
 
 struct WorkoutDetailView: View {
-    let workout: Workout  // The workout we're showing
-    
-    // We'll decode the [Stopwatch] from the workout's stopwatchesData
+    let workout: Workout      // from Core Data
     @State private var decodedStopwatches: [Stopwatch] = []
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // 1) Show date
@@ -20,39 +18,19 @@ struct WorkoutDetailView: View {
                 Text("Date: \(date, formatter: detailDateFormatter)")
                     .font(.headline)
             }
-            
-            // 2) For each stopwatch, show name & laps
+
+            // 2) Show each stopwatch in a scrollable list
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(decodedStopwatches.indices, id: \.self) { index in
-                        let sw = decodedStopwatches[index]
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Stopwatch: \(sw.name.isEmpty ? "Untitled" : sw.name)")
-                                .font(.subheadline)
-                                .bold()
-                            
-                            Text("Elapsed Time: \(formattedTime(sw.elapsedTime))")
-                            
-                            if !sw.laps.isEmpty {
-                                Text("Laps:")
-                                    .font(.subheadline)
-                                    .bold()
-                                ForEach(sw.laps.indices, id: \.self) { lapIndex in
-                                    HStack {
-                                        Text("Lap \(lapIndex + 1)")
-                                        Spacer()
-                                        Text(formattedTime(sw.laps[lapIndex]))
-                                    }
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
+                        StopwatchDetailView(
+                            stopwatch: decodedStopwatches[index],
+                            formattedTime: formattedTime
+                        )
                     }
                 }
             }
-            
+
             Spacer()
         }
         .padding()
@@ -61,8 +39,8 @@ struct WorkoutDetailView: View {
             decodeStopwatches()
         }
     }
-    
-    // MARK: - Decode [Stopwatch]
+
+    // MARK: - Decode [Stopwatch] from workout.stopwatchesData
     private func decodeStopwatches() {
         guard let jsonString = workout.stopwatchesData,
               let data = jsonString.data(using: .utf8) else {
@@ -76,7 +54,7 @@ struct WorkoutDetailView: View {
             print("Failed to decode stopwatches:", error)
         }
     }
-    
+
     // MARK: - Time Formatting
     private func formattedTime(_ interval: TimeInterval) -> String {
         let minutes = Int(interval) / 60
@@ -92,4 +70,5 @@ private let detailDateFormatter: DateFormatter = {
     formatter.timeStyle = .medium
     return formatter
 }()
+
 

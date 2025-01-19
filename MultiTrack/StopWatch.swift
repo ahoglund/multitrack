@@ -8,8 +8,14 @@
 import Foundation
 
 struct Stopwatch : Codable {
-    var name: String = "timer"
+    var name: String = ""
     var elapsedTime: TimeInterval = 0
-    var laps: [TimeInterval] = []
+    var laps: [Lap] = []
     var isRunning: Bool = false
+    var number: Int = 0
+    
+    public func fullName() -> String {
+        "\(name) \(number)"
+    }
 }
+

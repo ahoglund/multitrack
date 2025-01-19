@@ -16,11 +16,11 @@ class StopwatchesViewModel: ObservableObject {
     private var lastUpdateTime: Date?
     
     init() {
-        // Optionally initialize with one or more stopwatches
-        stopwatches = [Stopwatch(), Stopwatch()]
+        var stopwatch = Stopwatch()
+        stopwatch.name = "Stopwatch 1"
+        stopwatch.number = 1
+        stopwatches = [stopwatch]
     }
-    
-    // MARK: - Timer Management
     
     func startStopwatch(at index: Int) {
         guard index < stopwatches.count else { return }
@@ -67,15 +67,22 @@ class StopwatchesViewModel: ObservableObject {
         }
     }
     
-    func lapStopwatch(at index: Int) {
+    func lapStopwatch(at index: Int, rest: Bool) {
         guard index < stopwatches.count else { return }
         guard stopwatches[index].isRunning else { return }
-        stopwatches[index].laps.append(stopwatches[index].elapsedTime)
+        stopwatches[index].laps.append(Lap(elapsedTime: stopwatches[index].elapsedTime, isRest: rest))
     }
     
     // Add a new stopwatch
-    func addStopwatch() {
-        stopwatches.append(Stopwatch())
+    func addStopwatch(index: Int) {
+        stopwatches.append(Stopwatch(name: "Stopwatch \(index + 1)", number: index + 1))
+    }
+    
+    func endWorkout() {
+        // stop all stopwatches
+        for i in stopwatches.indices where stopwatches[i].isRunning {
+            stopwatches[i].isRunning = false
+        }
     }
     
     // Update time for all running stopwatches
@@ -91,6 +98,7 @@ class StopwatchesViewModel: ObservableObject {
     }
     
     func saveWorkout(context: NSManagedObjectContext) {
+        endWorkout()
         let workout = Workout(context: context)
         workout.id = UUID()
         workout.date = Date()

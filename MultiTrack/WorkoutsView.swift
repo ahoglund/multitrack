@@ -8,7 +8,7 @@ import SwiftUI
 import CoreData
 
 struct WorkoutsView: View {
-    // We fetch all workouts from Core Data
+    // Fetch all workouts from Core Data
     @FetchRequest(
         entity: Workout.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \Workout.date, ascending: false)]
