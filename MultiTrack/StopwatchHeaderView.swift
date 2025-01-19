@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StopwatchHeaderView: View {
-    @Binding var stopwatch: Stopwatch // We only need the stopwatch name
+    @Binding var stopwatch: Stopwatch
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -17,9 +17,20 @@ struct StopwatchHeaderView: View {
                 .textFieldStyle(PlainTextFieldStyle())
                 .multilineTextAlignment(.leading)
 
-            Text(formattedTime(stopwatch.elapsedTime))
-                .font(.system(size: 36, weight: .light, design: .monospaced))
-                .multilineTextAlignment(.trailing)
+            HStack{
+                Text(formattedTime(stopwatch.elapsedTime))
+                    .font(.system(size: 48, weight: .light, design: .monospaced))
+                    .multilineTextAlignment(.trailing)
+                
+                Spacer()
+                
+                VStack {
+                    Text("Current Lap").font(.caption)
+                    Text(formattedTime(stopwatch.currentLapTime))
+                        .font(.system(size: 16, weight: .light, design: .monospaced))
+                        .multilineTextAlignment(.trailing)
+                }
+            }
         }
     }
 

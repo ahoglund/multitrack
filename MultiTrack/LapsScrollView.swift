@@ -18,22 +18,32 @@ struct LapsScrollView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        ForEach(laps.indices, id: \.self) { i in
+                        HStack {
+                            Text("Type")
+                                .font(.caption)
+                            Spacer()
+                            Text("Duration")
+                                .font(.caption)
+                            Spacer()
+                            Text("Ended At")
+                                .font(.caption)
+                        }
+                        ForEach(laps.indices.reversed(), id: \.self) { i in
                             HStack {
                                 Text("\(laps[i].isRest ? "Rest" : "Lap") \(i + 1)")
                                     .font(.subheadline)
                                     .foregroundColor(.primary)
-                                
                                 Spacer()
-                                
+                                Text(formattedTime(laps[i].endTime - laps[i].startTime))
+                                    .font(.subheadline)
+                                    .foregroundColor(.primary)
+                                Spacer()
                                 // Right-aligned lap time
-                                Text(formattedTime(laps[i].elapsedTime))
+                                Text(formattedTime(laps[i].endTime))
                                     .font(.subheadline)
                                     .foregroundColor(.primary)
                             }
                             .padding(.vertical, 6)
-                            
-                            // Thin line separator
                             Divider()
                         }
                     }

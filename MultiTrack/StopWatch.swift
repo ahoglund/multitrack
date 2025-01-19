@@ -10,6 +10,7 @@ import Foundation
 struct Stopwatch : Codable {
     var name: String = ""
     var elapsedTime: TimeInterval = 0
+    var currentLapTime: TimeInterval = 0
     var laps: [Lap] = []
     var isRunning: Bool = false
     var number: Int = 0

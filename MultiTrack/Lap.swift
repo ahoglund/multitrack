@@ -8,6 +8,7 @@
 import Foundation
 
 struct Lap: Codable {
-    var elapsedTime: TimeInterval = 0
+    var startTime: TimeInterval = 0
+    var endTime: TimeInterval = 0
     var isRest: Bool = false
 }

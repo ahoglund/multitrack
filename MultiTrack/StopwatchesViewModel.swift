@@ -34,7 +34,7 @@ class StopwatchesViewModel: ObservableObject {
         if timerCancellable == nil {
             lastUpdateTime = Date()
             // Update 10 times/sec
-            timerCancellable = Timer.publish(every: 0.1, on: .main, in: .common)
+            timerCancellable = Timer.publish(every: 0.01, on: .main, in: .common)
                 .autoconnect()
                 .sink { [weak self] _ in
                     self?.updateStopwatches()
@@ -55,7 +55,6 @@ class StopwatchesViewModel: ObservableObject {
     
     func resetStopwatch(at index: Int) {
         guard index < stopwatches.count else { return }
-        guard stopwatches[index].isRunning else { return }
         stopwatches[index].elapsedTime = 0
         stopwatches[index].laps.removeAll()
         stopwatches[index].isRunning = false
@@ -70,7 +69,11 @@ class StopwatchesViewModel: ObservableObject {
     func lapStopwatch(at index: Int, rest: Bool) {
         guard index < stopwatches.count else { return }
         guard stopwatches[index].isRunning else { return }
-        stopwatches[index].laps.append(Lap(elapsedTime: stopwatches[index].elapsedTime, isRest: rest))
+        let startTime = (stopwatches[index].laps.count == 0) ? 0.0 : stopwatches[index].laps.last?.endTime
+        let endTime = stopwatches[index].elapsedTime
+        print(startTime!)
+        print(endTime)
+        stopwatches[index].laps.append(Lap(startTime: Double(startTime!), endTime: endTime, isRest: rest))
     }
     
     // Add a new stopwatch
@@ -93,7 +96,9 @@ class StopwatchesViewModel: ObservableObject {
         lastUpdateTime = now
         
         for i in stopwatches.indices where stopwatches[i].isRunning {
+//            let startTime = stopwatches[i].laps.count == 0 ? 0.0 : stopwatches[i].laps.last.endTime
             stopwatches[i].elapsedTime += delta
+            stopwatches[i].currentLapTime += delta
         }
     }
     

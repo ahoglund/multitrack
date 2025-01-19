@@ -28,7 +28,7 @@ struct StopwatchDetailView: View {
                     HStack {
                         Text("Lap \(lapIndex + 1)")
                         Spacer()
-                        Text(formattedTime(stopwatch.laps[lapIndex].elapsedTime))
+                        Text(formattedTime(stopwatch.laps[lapIndex].endTime))
                     }
                 }
             }

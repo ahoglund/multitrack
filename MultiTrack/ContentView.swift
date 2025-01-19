@@ -21,9 +21,7 @@ struct ContentView: View {
 //                }
 //            }
             ToolbarItem(placement: .bottomBar) {
-                NavigationLink("All Workouts") {
-                    WorkoutsView()
-                }
+                NavigationLink("All Workouts", destination: WorkoutsView())
             }
         }
     }
